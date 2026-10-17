@@ -1,0 +1,6 @@
+{
+  "name": "스시 마스터 (Sushi Master)",
+  "description": "1분 동안 손님의 주문에 맞춰 귀여운 스시를 완성하고 최고 기록에 도전하는 파스텔톤 캐주얼 스시 타이쿤 게임",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

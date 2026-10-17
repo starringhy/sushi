@@ -1,0 +1,2368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>스시 마스터 - 1분 초밥 타이쿤 게임</title>
+  <meta name="description" content="1분 동안 손님의 주문에 맞춰 귀여운 스시를 서빙하고 최고 점수 랭킹에 도전하는 파스텔톤 캐주얼 스시 게임">
+  <meta property="og:title" content="스시 마스터 - 1분 초밥 타이쿤 게임">
+  <meta property="og:description" content="귀여운 파스텔톤 스시 타이쿤! 1분 동안 손님의 주문을 맞춰 랭킹 1위에 도전해보세요.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Gaegu & Jua for cute playful aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       PASTEL JAPANESE SUSHI BAR THEME & CSS VARIABLES
+       ========================================================= */
+    :root {
+      --bg-cream: #FFFDF7;
+      --bg-warm: #FBF4E8;
+      --pastel-pink: #FFD2D7;
+      --pastel-coral: #FFAAA6;
+      --pastel-yellow: #FFEEAD;
+      --pastel-mint: #D4EDDA;
+      --pastel-sage: #BCE3C5;
+      --pastel-blue: #C5E3F6;
+      --pastel-purple: #E8D7F1;
+      --wood-dark: #6D4C41;
+      --wood-medium: #8D6E63;
+      --wood-light: #D7CCC8;
+      --wood-table: #DEBA9D;
+      --text-dark: #372826;
+      --text-muted: #796665;
+      --accent-red: #E64A45;
+      --accent-green: #2E7D32;
+      --card-shadow: 0 10px 25px -5px rgba(110, 80, 70, 0.12), 0 8px 10px -6px rgba(110, 80, 70, 0.08);
+      --pop-shadow: 0 6px 0 rgba(100, 60, 40, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Jua', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #FFF6E9 0%, #FFEBEF 50%, #EDF7FF 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient background Japanese wave/dots motif */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(#F5D6CE 1.5px, transparent 1.5px),
+        radial-gradient(#D6E7F5 1.5px, transparent 1.5px);
+      background-size: 36px 36px;
+      background-position: 0 0, 18px 18px;
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Main Container */
+    #game-app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 680px;
+      min-height: 720px;
+      height: 94vh;
+      max-height: 860px;
+      background: #FFFFFF;
+      border: 4px solid #F0DFCE;
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(90, 60, 40, 0.15), 0 2px 6px rgba(90, 60, 40, 0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      margin: 10px auto;
+    }
+
+    /* Traditional Noren (Curtain) at top */
+    .noren-header {
+      display: flex;
+      justify-content: space-around;
+      position: relative;
+      z-index: 10;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.06));
+    }
+
+    .noren-tab {
+      flex: 1;
+      height: 38px;
+      background: #F9817E;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Gaegu', cursive;
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      margin: 0 2px;
+      border-top: 5px solid #D65A57;
+      letter-spacing: 2px;
+    }
+    .noren-tab:nth-child(even) {
+      background: #FA9A97;
+    }
+
+    /* Screen Views */
+    .screen {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      padding: 16px;
+      position: relative;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================================
+       TITLE SCREEN
+       ========================================================= */
+    #screen-title {
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      padding: 24px 20px;
+      background: radial-gradient(circle at center, #FFFDF8 0%, #FFF3E6 100%);
+    }
+
+    .title-banner {
+      margin-top: 10px;
+    }
+
+    .title-badge {
+      display: inline-block;
+      background: #FFE494;
+      color: #8C5400;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      border: 2px solid #F5C658;
+    }
+
+    .main-title {
+      font-size: 46px;
+      color: #E64A45;
+      text-shadow: 3px 3px 0 #FFF, 5px 5px 0 #F8C3BF;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      animation: gentleBounce 2.4s infinite ease-in-out;
+    }
+
+    .sub-title {
+      font-size: 17px;
+      color: #796665;
+      font-weight: normal;
+    }
+
+    @keyframes gentleBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    /* Mascot showcase on title */
+    .mascot-container {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      margin: 15px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-sushi-carousel {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 10px 0;
+    }
+
+    .hero-sushi-carousel .sushi-icon-wrapper {
+      width: 64px;
+      height: 52px;
+      animation: floatSushi 3s infinite ease-in-out;
+    }
+    .hero-sushi-carousel .sushi-icon-wrapper:nth-child(2) { animation-delay: 0.4s; }
+    .hero-sushi-carousel .sushi-icon-wrapper:nth-child(3) { animation-delay: 0.8s; }
+    .hero-sushi-carousel .sushi-icon-wrapper:nth-child(4) { animation-delay: 1.2s; }
+    .hero-sushi-carousel .sushi-icon-wrapper:nth-child(5) { animation-delay: 1.6s; }
+
+    @keyframes floatSushi {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(4deg); }
+    }
+
+    .game-rules-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #F5E1CE;
+      border-radius: 18px;
+      padding: 14px 18px;
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(140, 90, 60, 0.07);
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #5D4037;
+    }
+    .rule-item .icon {
+      font-size: 18px;
+    }
+
+    .title-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 360px;
+      margin-top: 10px;
+    }
+
+    /* Buttons */
+    .btn {
+      position: relative;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      font-family: 'Jua', 'Noto Sans KR', sans-serif;
+      font-size: 19px;
+      border-radius: 16px;
+      padding: 13px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--pop-shadow);
+      text-decoration: none;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(100, 60, 40, 0.2);
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #FF6F61 0%, #E64A45 100%);
+      color: #FFFFFF;
+      font-size: 24px;
+      padding: 16px 28px;
+      border: 3px solid #C43834;
+      box-shadow: 0 6px 0 #9E2623, 0 10px 18px rgba(230, 74, 69, 0.35);
+    }
+
+    .btn-primary:active {
+      box-shadow: 0 2px 0 #9E2623;
+    }
+
+    .btn-secondary {
+      background: #FFF;
+      color: #6D4C41;
+      border: 2px solid #E8D3C1;
+      font-size: 16px;
+      padding: 10px 18px;
+    }
+
+    .btn-secondary:hover {
+      background: #FFFBF5;
+    }
+
+    .sound-toggle-bar {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .icon-btn {
+      background: #FFF;
+      border: 2px solid #E6D0BD;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 0 rgba(100, 60, 40, 0.15);
+      transition: transform 0.1s;
+      font-size: 18px;
+    }
+    .icon-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(100, 60, 40, 0.15);
+    }
+    .icon-btn.muted {
+      opacity: 0.55;
+      filter: grayscale(1);
+    }
+
+    /* =========================================================
+       PLAY SCREEN HUD & RESTAURANT INTERIOR
+       ========================================================= */
+    #screen-play {
+      padding: 0;
+      justify-content: space-between;
+      background: #FFFDF8;
+    }
+
+    /* Top HUD */
+    .hud-header {
+      background: #FFF4E5;
+      border-bottom: 3px solid #EDD4BC;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 5;
+    }
+
+    .hud-box {
+      background: #FFFFFF;
+      border: 2px solid #ECD7C3;
+      border-radius: 14px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 3px 0 rgba(130, 90, 60, 0.1);
+    }
+
+    .hud-timer-badge {
+      background: #FFEDEA;
+      border-color: #FFAAA6;
+      color: #E64A45;
+    }
+
+    .hud-timer-badge.urgent {
+      animation: pulseUrgent 0.6s infinite alternate ease-in-out;
+      background: #FFE0DE;
+      border-color: #E64A45;
+    }
+
+    @keyframes pulseUrgent {
+      from { transform: scale(1); }
+      to { transform: scale(1.07); }
+    }
+
+    .hud-val {
+      font-family: 'Jua', sans-serif;
+      font-size: 22px;
+      font-variant-numeric: tabular-nums;
+      color: #3E2723;
+    }
+
+    .hud-label {
+      font-size: 13px;
+      color: #8D6E63;
+      font-weight: bold;
+    }
+
+    /* Combo Pill */
+    .combo-pill {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 54px;
+      background: linear-gradient(135deg, #FF9A76 0%, #FF6B6B 100%);
+      color: #FFF;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 15px;
+      font-weight: bold;
+      border: 2px solid #FFF;
+      box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4);
+      display: none;
+      animation: bounceCombo 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 10;
+    }
+    .combo-pill.active {
+      display: inline-block;
+    }
+
+    @keyframes bounceCombo {
+      0% { transform: translateX(-50%) scale(0.6); }
+      70% { transform: translateX(-50%) scale(1.15); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
+
+    /* Timer Progress Bar */
+    .timer-bar-wrap {
+      width: 100%;
+      height: 8px;
+      background: #EADBCB;
+      position: relative;
+    }
+    .timer-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4CAF50 0%, #FFC107 70%, #F44336 100%);
+      width: 100%;
+      transition: width 0.1s linear;
+    }
+
+    /* =========================================================
+       CUSTOMER COUNTER AREA
+       ========================================================= */
+    .restaurant-stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: radial-gradient(ellipse at 50% 20%, #FFFDF8 0%, #F5ECE2 100%);
+      overflow: hidden;
+      justify-content: flex-end;
+    }
+
+    /* Wall decorations */
+    .wall-decor {
+      position: absolute;
+      top: 15px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 24px;
+      opacity: 0.65;
+      pointer-events: none;
+    }
+    .scroll-hanging {
+      background: #FFF;
+      border: 2px solid #795548;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-family: 'Gaegu', cursive;
+      font-size: 18px;
+      color: #5D4037;
+      text-align: center;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    }
+
+    /* Customer Container */
+    .customer-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 3;
+      margin-bottom: -15px;
+    }
+
+    /* Speech Bubble for Order */
+    .order-bubble {
+      position: relative;
+      background: #FFFFFF;
+      border: 3px solid #8D6E63;
+      border-radius: 20px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 18px rgba(110, 70, 50, 0.15);
+      margin-bottom: 8px;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .order-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 12px 10px 0;
+      border-style: solid;
+      border-color: #8D6E63 transparent transparent;
+      display: block;
+      width: 0;
+    }
+    .order-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 10px 8px 0;
+      border-style: solid;
+      border-color: #FFFFFF transparent transparent;
+      display: block;
+      width: 0;
+      z-index: 1;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.6); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .order-bubble .order-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .order-bubble .order-hint {
+      font-size: 12px;
+      color: #9E7D73;
+    }
+    .order-bubble .order-name {
+      font-size: 19px;
+      color: #E64A45;
+      font-weight: bold;
+    }
+
+    .order-bubble .target-sushi-icon {
+      width: 58px;
+      height: 44px;
+      filter: drop-shadow(0 3px 4px rgba(0,0,0,0.1));
+    }
+
+    /* Customer Avatar */
+    .customer-avatar-wrap {
+      position: relative;
+      width: 160px;
+      height: 180px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      transition: transform 0.25s ease;
+    }
+
+    .customer-avatar-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 6px 10px rgba(100, 60, 40, 0.12));
+    }
+
+    /* Customer Animations */
+    .customer-entering {
+      animation: customerEnter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards;
+    }
+    .customer-leaving-happy {
+      animation: customerLeaveHappy 0.45s ease-in forwards;
+    }
+    .customer-leaving-sad {
+      animation: customerLeaveSad 0.45s ease-in forwards;
+    }
+
+    @keyframes customerEnter {
+      0% { transform: translateY(40px) scale(0.85); opacity: 0; }
+      70% { transform: translateY(-8px) scale(1.04); opacity: 1; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    @keyframes customerLeaveHappy {
+      0% { transform: scale(1) translateY(0); opacity: 1; }
+      40% { transform: scale(1.1) translateY(-14px); }
+      100% { transform: scale(0.8) translateY(40px); opacity: 0; }
+    }
+
+    @keyframes customerLeaveSad {
+      0% { transform: scale(1) translateY(0); }
+      30% { transform: scale(0.95) rotate(-6deg); }
+      60% { transform: scale(0.95) rotate(6deg); }
+      100% { transform: scale(0.8) translateY(40px); opacity: 0; }
+    }
+
+    /* Floating Feedback Score Popups */
+    .floating-feedback {
+      position: absolute;
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 38px;
+      font-weight: 900;
+      pointer-events: none;
+      z-index: 20;
+      animation: floatUpFade 0.75s ease-out forwards;
+      text-shadow: 2px 2px 0 #FFF, -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF;
+    }
+    .floating-feedback.positive {
+      color: #2E7D32;
+    }
+    .floating-feedback.negative {
+      color: #D32F2F;
+    }
+
+    @keyframes floatUpFade {
+      0% { opacity: 0; transform: translate(-50%, 0) scale(0.7); }
+      30% { opacity: 1; transform: translate(-50%, -24px) scale(1.2); }
+      100% { opacity: 0; transform: translate(-50%, -60px) scale(1); }
+    }
+
+    /* =========================================================
+       SUSHI COUNTER TABLE (WOOD TEXTURE)
+       ========================================================= */
+    .counter-desk {
+      width: 100%;
+      height: 60px;
+      background: linear-gradient(180deg, #E6CBB1 0%, #D8B799 40%, #B89274 100%);
+      border-top: 5px solid #F6E6D5;
+      border-bottom: 4px solid #8D6E63;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 2px 6px rgba(255,255,255,0.6), 0 8px 12px rgba(60,30,20,0.15);
+      z-index: 4;
+    }
+
+    /* Serving Plate in Center */
+    .serving-plate {
+      width: 120px;
+      height: 48px;
+      background: #FFFFFF;
+      border: 3px solid #D5C1AE;
+      border-radius: 28px;
+      box-shadow: 0 4px 0 #BBA38F, 0 8px 12px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: transform 0.2s;
+    }
+
+    .serving-plate.serve-glow {
+      animation: plateSparkle 0.4s ease-out;
+    }
+
+    @keyframes plateSparkle {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2) rotate(4deg); }
+      100% { transform: scale(1); }
+    }
+
+    .serving-plate-content {
+      width: 76px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Side condiments */
+    .condiment {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .condiment-left { left: 24px; }
+    .condiment-right { right: 24px; }
+
+    /* =========================================================
+       CHEF's SUSHI PREPARATION BAR (INTERACTIVE BUTTONS)
+       ========================================================= */
+    .chef-station {
+      background: #FDF6EC;
+      border-top: 4px solid #E4CDBC;
+      padding: 14px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 5;
+    }
+
+    .station-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+    }
+
+    .station-title {
+      font-size: 15px;
+      color: #8D6E63;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .keyboard-hint {
+      font-size: 12px;
+      color: #A1887F;
+      background: #FFF;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid #E0CEBE;
+    }
+
+    /* Sushi Buttons Grid */
+    .sushi-button-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .sushi-card-btn {
+      position: relative;
+      background: #FFFFFF;
+      border: 3px solid #E8D5C4;
+      border-radius: 18px;
+      padding: 8px 4px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #D0B8A5, 0 8px 12px rgba(100,60,40,0.06);
+      transition: all 0.1s ease;
+      touch-action: manipulation;
+    }
+
+    .sushi-card-btn:hover {
+      background: #FFFDF9;
+      border-color: #DABFA8;
+      transform: translateY(-2px);
+    }
+
+    .sushi-card-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #D0B8A5;
+    }
+
+    /* Keyboard shortcut number badge */
+    .key-badge {
+      position: absolute;
+      top: 4px;
+      left: 6px;
+      width: 18px;
+      height: 18px;
+      background: #F4E7DA;
+      color: #795548;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #D7C0AD;
+    }
+
+    .sushi-icon-container {
+      width: 100%;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px 0;
+    }
+
+    .sushi-icon-svg {
+      width: 68px;
+      height: 48px;
+      filter: drop-shadow(0 3px 3px rgba(0,0,0,0.08));
+      transition: transform 0.1s;
+    }
+
+    .sushi-card-btn:active .sushi-icon-svg {
+      transform: scale(0.9);
+    }
+
+    .sushi-name {
+      font-size: 13px;
+      color: #5D4037;
+      font-weight: bold;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* =========================================================
+       GAME OVER & RANKING MODAL / LEADERBOARD
+       ========================================================= */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(50, 30, 25, 0.65);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 16px;
+      animation: fadeIn 0.25s ease-out;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-window {
+      background: #FFFFFF;
+      border: 4px solid #ECD7C3;
+      border-radius: 26px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-header-icon {
+      font-size: 48px;
+      margin-bottom: 4px;
+      animation: prizePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes prizePop {
+      0% { transform: scale(0) rotate(-15deg); }
+      70% { transform: scale(1.2) rotate(10deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    .modal-title {
+      font-size: 32px;
+      color: #E64A45;
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
+    }
+
+    .modal-subtitle {
+      font-size: 15px;
+      color: #8D6E63;
+      margin-bottom: 16px;
+    }
+
+    /* Score Summary Box */
+    .score-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+      background: #FFF9F2;
+      border: 2px solid #F2E2D2;
+      border-radius: 18px;
+      padding: 12px;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .summary-card .label {
+      font-size: 12px;
+      color: #9E7D73;
+    }
+    .summary-card .value {
+      font-size: 22px;
+      color: #3E2723;
+      font-weight: bold;
+    }
+    .summary-card.final-score .value {
+      color: #E64A45;
+      font-size: 28px;
+    }
+
+    /* Nickname input section */
+    .save-score-section {
+      width: 100%;
+      background: #FDF3E7;
+      border: 2px dashed #E5C9B3;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .save-score-section.submitted {
+      display: none;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nickname-input {
+      flex: 1;
+      border: 2px solid #DAC2AD;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-family: 'Jua', sans-serif;
+      font-size: 16px;
+      outline: none;
+      color: #3E2723;
+    }
+    .nickname-input:focus {
+      border-color: #E64A45;
+      box-shadow: 0 0 0 3px rgba(230, 74, 69, 0.15);
+    }
+
+    .btn-register {
+      background: #4CAF50;
+      color: #FFF;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-family: 'Jua', sans-serif;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #2E7D32;
+      white-space: nowrap;
+    }
+    .btn-register:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #2E7D32;
+    }
+
+    /* Leaderboard list */
+    .leaderboard-title {
+      font-size: 18px;
+      color: #5D4037;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .leaderboard-container {
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 2px solid #EFE4D6;
+      border-radius: 14px;
+      background: #FFF;
+      margin-bottom: 16px;
+    }
+
+    .ranking-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .ranking-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      border-bottom: 1px solid #F5ECE3;
+      font-size: 15px;
+    }
+    .ranking-row:last-child {
+      border-bottom: none;
+    }
+    .ranking-row.current-player {
+      background: #FFF0ED;
+      font-weight: bold;
+    }
+
+    .rank-num {
+      width: 28px;
+      font-weight: bold;
+      color: #8D6E63;
+      text-align: left;
+    }
+    .rank-num.rank-1 { color: #E6A100; font-size: 18px; }
+    .rank-num.rank-2 { color: #8A9BA8; font-size: 17px; }
+    .rank-num.rank-3 { color: #B07851; font-size: 16px; }
+
+    .rank-name {
+      flex: 1;
+      text-align: left;
+      padding: 0 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #3E2723;
+    }
+
+    .rank-score {
+      font-weight: bold;
+      color: #E64A45;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+    }
+
+    /* Responsiveness for compact mobile screens */
+    @media (max-width: 480px) {
+      #game-app {
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        border: none;
+        margin: 0;
+      }
+      .main-title {
+        font-size: 38px;
+      }
+      .sushi-card-btn {
+        padding: 6px 2px 4px;
+      }
+      .sushi-name {
+        font-size: 11px;
+      }
+      .sushi-icon-container {
+        height: 42px;
+      }
+      .sushi-icon-svg {
+        width: 54px;
+        height: 38px;
+      }
+      .customer-avatar-wrap {
+        width: 130px;
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Game Shell Container -->
+  <div id="game-app">
+
+    <!-- Japanese Noren Header -->
+    <div class="noren-header">
+      <div class="noren-tab">스</div>
+      <div class="noren-tab">시</div>
+      <div class="noren-tab">마</div>
+      <div class="noren-tab">스</div>
+      <div class="noren-tab">터</div>
+    </div>
+
+    <!-- 1. TITLE SCREEN -->
+    <div id="screen-title" class="screen active">
+      <div class="title-banner">
+        <div class="title-badge">🍣 1분 캐주얼 스시 타이쿤 🍣</div>
+        <h1 class="main-title">스시 마스터!</h1>
+        <p class="sub-title">손님이 원하는 스시를 빠르게 쥐어 드려보세요!</p>
+      </div>
+
+      <!-- Sushi Carousel Mascot Preview -->
+      <div class="mascot-container">
+        <div class="hero-sushi-carousel" id="title-carousel">
+          <!-- SVGs injected via script -->
+        </div>
+      </div>
+
+      <!-- Rules Explanation Box -->
+      <div class="game-rules-card">
+        <div class="rules-grid">
+          <div class="rule-item">
+            <span class="icon">⏱️</span>
+            <span>제한시간 <strong>1분 (60초)</strong></span>
+          </div>
+          <div class="rule-item">
+            <span class="icon">✨</span>
+            <span>정확 서빙: <strong>+10점</strong></span>
+          </div>
+          <div class="rule-item">
+            <span class="icon">💔</span>
+            <span>잘못 서빙: <strong>-10점</strong></span>
+          </div>
+          <div class="rule-item">
+            <span class="icon">🔥</span>
+            <span>연속 성공 시 <strong>콤보 보너스</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="title-actions">
+        <button id="btn-start-game" class="btn btn-primary">
+          <span>게임 시작하기 🍣</span>
+        </button>
+        <button id="btn-view-leaderboard" class="btn btn-secondary">
+          <span>🏆 명예의 전당 (랭킹)</span>
+        </button>
+
+        <div class="sound-toggle-bar">
+          <button id="btn-toggle-bgm" class="icon-btn" title="배경음악 켜기/끄기">🎵</button>
+          <button id="btn-toggle-sfx" class="icon-btn" title="효과음 켜기/끄기">🔔</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. GAMEPLAY SCREEN -->
+    <div id="screen-play" class="screen">
+      
+      <!-- Top HUD Header -->
+      <div class="hud-header">
+        <!-- Timer -->
+        <div class="hud-box hud-timer-badge" id="hud-timer-container">
+          <span>⏳</span>
+          <span class="hud-label">시간</span>
+          <span class="hud-val" id="hud-timer">01:00</span>
+        </div>
+
+        <!-- Combo floating pill -->
+        <div class="combo-pill" id="hud-combo-pill">🔥 COMBO x2</div>
+
+        <!-- Score -->
+        <div class="hud-box">
+          <span>🍣</span>
+          <span class="hud-label">점수</span>
+          <span class="hud-val" id="hud-score">0</span>
+        </div>
+
+        <!-- Quick Sound / Exit buttons -->
+        <div style="display:flex; gap:6px;">
+          <button id="btn-play-sfx-toggle" class="icon-btn" style="width:34px; height:34px; font-size:14px;">🔔</button>
+          <button id="btn-play-bgm-toggle" class="icon-btn" style="width:34px; height:34px; font-size:14px;">🎵</button>
+        </div>
+      </div>
+
+      <!-- Timer Bar Fill -->
+      <div class="timer-bar-wrap">
+        <div class="timer-bar-fill" id="timer-bar-fill"></div>
+      </div>
+
+      <!-- Restaurant Stage / Customer Counter -->
+      <div class="restaurant-stage" id="restaurant-stage">
+        
+        <!-- Wall scroll decor -->
+        <div class="wall-decor">
+          <div class="scroll-hanging">一期一會</div>
+          <div class="scroll-hanging">新鮮第一</div>
+        </div>
+
+        <!-- Customer area -->
+        <div class="customer-area">
+          
+          <!-- Order Balloon -->
+          <div class="order-bubble" id="order-bubble">
+            <div class="target-sushi-icon" id="order-sushi-icon">
+              <!-- Sushi SVG target -->
+            </div>
+            <div class="order-text">
+              <span class="order-hint" id="customer-dialogue">주문할게요!</span>
+              <span class="order-name" id="order-sushi-name">연어스시</span>
+            </div>
+          </div>
+
+          <!-- Customer Character Avatar -->
+          <div class="customer-avatar-wrap" id="customer-avatar-wrap">
+            <!-- Dynamic Customer Avatar SVG -->
+          </div>
+        </div>
+
+        <!-- Floating reaction score element -->
+        <div id="floating-feedback-container"></div>
+
+        <!-- Counter Desk Wood Table -->
+        <div class="counter-desk">
+          <!-- Left Condiments: Tea cup -->
+          <div class="condiment condiment-left">
+            <svg width="28" height="34" viewBox="0 0 28 34" fill="none">
+              <path d="M4 10C4 8 7 6 14 6C21 6 24 8 24 10L22 30C22 32 19 33 14 33C9 33 6 32 6 30L4 10Z" fill="#88D49E" stroke="#5D4037" stroke-width="2"/>
+              <ellipse cx="14" cy="10" rx="9" ry="3" fill="#2E7D32"/>
+              <path d="M12 2C13 4 15 4 16 2" stroke="#B0BEC5" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <!-- Serving Plate -->
+          <div class="serving-plate" id="serving-plate">
+            <div class="serving-plate-content" id="serving-plate-content">
+              <!-- Completed sushi on plate -->
+            </div>
+          </div>
+
+          <!-- Right Condiments: Wasabi & Gari dish -->
+          <div class="condiment condiment-right">
+            <svg width="34" height="24" viewBox="0 0 34 24" fill="none">
+              <ellipse cx="17" cy="14" rx="15" ry="7" fill="#FFF" stroke="#8D6E63" stroke-width="2"/>
+              <circle cx="12" cy="12" r="5" fill="#81C784"/>
+              <circle cx="21" cy="12" r="5" fill="#FFB7B2"/>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Chef Station (Sushi Making Buttons) -->
+      <div class="chef-station">
+        <div class="station-title-row">
+          <span class="station-title">
+            <span>👨‍🍳</span>
+            <span>스시 제작대 (주문된 스시를 터치하세요!)</span>
+          </span>
+          <span class="keyboard-hint">키보드 [1] ~ [5] 단축키 지원</span>
+        </div>
+
+        <div class="sushi-button-grid">
+          <!-- 1. 계란스시 -->
+          <button class="sushi-card-btn" data-sushi="tamago" data-index="1">
+            <span class="key-badge">1</span>
+            <div class="sushi-icon-container" id="btn-icon-tamago"></div>
+            <span class="sushi-name">계란스시</span>
+          </button>
+
+          <!-- 2. 새우스시 -->
+          <button class="sushi-card-btn" data-sushi="ebi" data-index="2">
+            <span class="key-badge">2</span>
+            <div class="sushi-icon-container" id="btn-icon-ebi"></div>
+            <span class="sushi-name">새우스시</span>
+          </button>
+
+          <!-- 3. 연어스시 -->
+          <button class="sushi-card-btn" data-sushi="salmon" data-index="3">
+            <span class="key-badge">3</span>
+            <div class="sushi-icon-container" id="btn-icon-salmon"></div>
+            <span class="sushi-name">연어스시</span>
+          </button>
+
+          <!-- 4. 참치스시 -->
+          <button class="sushi-card-btn" data-sushi="tuna" data-index="4">
+            <span class="key-badge">4</span>
+            <div class="sushi-icon-container" id="btn-icon-tuna"></div>
+            <span class="sushi-name">참치스시</span>
+          </button>
+
+          <!-- 5. 광어스시 -->
+          <button class="sushi-card-btn" data-sushi="halibut" data-index="5">
+            <span class="key-badge">5</span>
+            <div class="sushi-icon-container" id="btn-icon-halibut"></div>
+            <span class="sushi-name">광어스시</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3. GAME OVER & LEADERBOARD MODAL -->
+    <div id="modal-result" class="modal-overlay">
+      <div class="modal-window">
+        <div class="modal-header-icon" id="result-icon">🏆</div>
+        <h2 class="modal-title" id="result-title">영업 종료!</h2>
+        <p class="modal-subtitle" id="result-subtitle">오늘의 스시바 영업 결과입니다</p>
+
+        <!-- Score Summary -->
+        <div class="score-summary-grid">
+          <div class="summary-card final-score">
+            <span class="label">최종 점수</span>
+            <span class="value" id="summary-final-score">0점</span>
+          </div>
+          <div class="summary-card">
+            <span class="label">성공 / 실패</span>
+            <span class="value" id="summary-stats">0 / 0</span>
+          </div>
+          <div class="summary-card">
+            <span class="label">최대 콤보</span>
+            <span class="value" id="summary-combo">0</span>
+          </div>
+        </div>
+
+        <!-- Nickname Registration Form -->
+        <div class="save-score-section" id="save-score-section">
+          <span style="font-size: 14px; color: #795548; font-weight: bold;">🎉 랭킹 등록하기</span>
+          <div class="input-row">
+            <input type="text" id="player-nickname" class="nickname-input" placeholder="닉네임 입력 (최대 8자)" maxlength="8" value="스시마스터">
+            <button id="btn-save-score" class="btn-register">등록</button>
+          </div>
+        </div>
+
+        <!-- Leaderboard Table -->
+        <div class="leaderboard-title">
+          <span>👑 TOP 10 랭킹</span>
+        </div>
+        <div class="leaderboard-container">
+          <ul class="ranking-list" id="ranking-list-items">
+            <!-- Dynamic Ranking Rows -->
+          </ul>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="modal-actions">
+          <button id="btn-play-again" class="btn btn-primary">
+            <span>다시 도전하기 🔄</span>
+          </button>
+          <button id="btn-modal-to-title" class="btn btn-secondary">
+            <span>메인 메뉴</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =========================================================
+       COMPLETE JAVASCRIPT GAME ENGINE & AUDIO SYNTHESIS
+       ========================================================= -->
+  <script>
+    (function() {
+      'use strict';
+
+      /* ---------------------------------------------------------
+         1. SUSHI DATA & HIGH FIDELITY SVG GENERATORS
+         5 types: 계란스시, 새우스시, 연어스시, 참치스시, 광어스시
+         --------------------------------------------------------- */
+      const SUSHIS = [
+        {
+          id: 'tamago',
+          name: '계란스시',
+          english: 'Egg Sushi',
+          color: '#FFD54F',
+          svg: `
+            <svg viewBox="0 0 100 70" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Rice Base (Shari) -->
+              <ellipse cx="50" cy="46" rx="35" ry="16" fill="#FBFBF9" stroke="#E0DCD3" stroke-width="2"/>
+              <ellipse cx="44" cy="42" rx="4" ry="2" fill="#EFECE4"/>
+              <ellipse cx="56" cy="45" rx="3" ry="1.5" fill="#EFECE4"/>
+              <!-- Tamago Omelet -->
+              <rect x="18" y="22" width="64" height="24" rx="10" fill="#FFD54F" stroke="#F5B014" stroke-width="2"/>
+              <!-- Omelet Highlight & layers -->
+              <path d="M24 26C36 24 64 24 76 26" stroke="#FFE97D" stroke-width="3" stroke-linecap="round"/>
+              <path d="M22 36C32 37 68 37 78 36" stroke="#F5A623" stroke-width="1.5" stroke-dasharray="3 3"/>
+              <!-- Nori Seaweed Belt -->
+              <rect x="44" y="20" width="12" height="36" rx="2" fill="#263238" stroke="#10171B" stroke-width="1.5"/>
+              <rect x="47" y="22" width="3" height="32" rx="1" fill="#37474F"/>
+            </svg>
+          `
+        },
+        {
+          id: 'ebi',
+          name: '새우스시',
+          english: 'Shrimp Sushi',
+          color: '#FF8A65',
+          svg: `
+            <svg viewBox="0 0 100 70" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Rice Base -->
+              <ellipse cx="48" cy="46" rx="34" ry="16" fill="#FBFBF9" stroke="#E0DCD3" stroke-width="2"/>
+              <ellipse cx="42" cy="43" rx="3.5" ry="2" fill="#EFECE4"/>
+              <!-- Ebi Tail -->
+              <path d="M72 42C78 40 86 36 88 32C86 38 88 44 92 46C86 46 80 44 74 45Z" fill="#E64A19" stroke="#BF360C" stroke-width="1.5"/>
+              <!-- Shrimp Body -->
+              <path d="M16 34C16 24 35 22 55 24C68 25 78 32 78 38C78 44 65 46 50 45C30 44 16 42 16 34Z" fill="#FF8A65" stroke="#E64A19" stroke-width="2"/>
+              <!-- Shrimp Stripes -->
+              <path d="M30 24C32 30 31 38 29 44" stroke="#D84315" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M44 24C46 32 45 38 43 45" stroke="#D84315" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M58 26C60 32 60 39 57 45" stroke="#D84315" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M24 28C38 25 60 27 70 31" stroke="#FFA486" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          `
+        },
+        {
+          id: 'salmon',
+          name: '연어스시',
+          english: 'Salmon Sushi',
+          color: '#FF7043',
+          svg: `
+            <svg viewBox="0 0 100 70" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Rice Base -->
+              <ellipse cx="50" cy="46" rx="35" ry="16" fill="#FBFBF9" stroke="#E0DCD3" stroke-width="2"/>
+              <ellipse cx="45" cy="43" rx="4" ry="2" fill="#EFECE4"/>
+              <!-- Salmon Fillet -->
+              <path d="M16 35C16 23 35 21 54 22C72 23 85 28 85 36C85 44 70 47 50 46C28 45 16 43 16 35Z" fill="#FF7043" stroke="#D84315" stroke-width="2"/>
+              <!-- Salmon White Marble Lines -->
+              <path d="M26 24C32 28 35 37 32 44" stroke="#FFF" stroke-width="2.2" stroke-linecap="round" opacity="0.85"/>
+              <path d="M40 23C47 28 50 38 46 45" stroke="#FFF" stroke-width="2.2" stroke-linecap="round" opacity="0.85"/>
+              <path d="M55 24C62 29 65 38 61 45" stroke="#FFF" stroke-width="2.2" stroke-linecap="round" opacity="0.85"/>
+              <path d="M69 27C75 32 77 39 74 44" stroke="#FFF" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+              <!-- Gloss highlight -->
+              <ellipse cx="32" cy="27" rx="6" ry="2" fill="#FFA285"/>
+            </svg>
+          `
+        },
+        {
+          id: 'tuna',
+          name: '참치스시',
+          english: 'Tuna Sushi',
+          color: '#D32F2F',
+          svg: `
+            <svg viewBox="0 0 100 70" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Rice Base -->
+              <ellipse cx="50" cy="46" rx="35" ry="16" fill="#FBFBF9" stroke="#E0DCD3" stroke-width="2"/>
+              <!-- Deep Red Tuna Fillet -->
+              <path d="M15 36C15 24 35 20 54 21C74 22 86 28 86 37C86 45 72 47 50 46C28 45 15 44 15 36Z" fill="#C2185B" stroke="#880E4F" stroke-width="2"/>
+              <!-- Tuna Subtle Muscle Lines -->
+              <path d="M28 23C36 28 38 38 34 45" stroke="#E91E63" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/>
+              <path d="M46 22C54 28 56 38 52 46" stroke="#E91E63" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/>
+              <path d="M64 24C71 29 73 38 70 45" stroke="#E91E63" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/>
+              <!-- Top Gloss highlight -->
+              <path d="M25 26C35 23 55 23 68 25" stroke="#F48FB1" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+            </svg>
+          `
+        },
+        {
+          id: 'halibut',
+          name: '광어스시',
+          english: 'Halibut Sushi',
+          color: '#ECEFF1',
+          svg: `
+            <svg viewBox="0 0 100 70" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Rice Base -->
+              <ellipse cx="50" cy="46" rx="35" ry="16" fill="#FBFBF9" stroke="#E0DCD3" stroke-width="2"/>
+              <!-- Translucent White Fish Fillet -->
+              <path d="M16 35C16 23 35 20 54 21C72 22 85 27 85 36C85 44 71 47 50 46C28 45 16 43 16 35Z" fill="#F5F5F5" stroke="#B0BEC5" stroke-width="2"/>
+              <!-- Halibut Delicate Pinkish / Silver Veins -->
+              <path d="M28 23C34 29 36 38 33 45" stroke="#FFCDD2" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M45 22C52 28 54 38 50 46" stroke="#FFCDD2" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M62 23C69 29 70 38 67 45" stroke="#CFD8DC" stroke-width="1.6" stroke-linecap="round"/>
+              <!-- Fresh Sashimi Sheen -->
+              <path d="M26 26C40 22 65 24 75 27" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          `
+        }
+      ];
+
+      /* ---------------------------------------------------------
+         2. DIVERSE PASTEL CUSTOMER CHARACTERS (Female, Male, Kid, etc.)
+         --------------------------------------------------------- */
+      const CUSTOMERS = [
+        {
+          id: 'girl_student',
+          name: '여학생 유나',
+          dialogues: ['배고파요! 스시 주세요~', '오늘도 신선한 걸로 부탁해요!', '연어랑 새우 완전 좋아해요!'],
+          render: (mood) => `
+            <svg viewBox="0 0 160 180" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Hair Back -->
+              <circle cx="80" cy="78" r="46" fill="#5D4037"/>
+              <ellipse cx="44" cy="100" rx="14" ry="30" fill="#5D4037"/>
+              <ellipse cx="116" cy="100" rx="14" ry="30" fill="#5D4037"/>
+              <!-- Clothes -->
+              <path d="M45 142C45 130 60 125 80 125C100 125 115 130 115 142L120 180H40L45 142Z" fill="#FFCCD5" stroke="#8D6E63" stroke-width="2"/>
+              <path d="M72 125L80 138L88 125" stroke="#E64A45" stroke-width="2.5"/>
+              <!-- Head / Face -->
+              <ellipse cx="80" cy="85" rx="36" ry="34" fill="#FFE5D9" stroke="#8D6E63" stroke-width="2"/>
+              <!-- Hair Front & Bangs -->
+              <path d="M48 68C60 55 100 55 112 68C112 68 104 80 80 80C56 80 48 68 48 68Z" fill="#5D4037"/>
+              <circle cx="106" cy="68" r="5" fill="#FF6B8B"/> <!-- Hairpin -->
+              <!-- Blush -->
+              <circle cx="58" cy="95" r="7" fill="#FF8DA1" opacity="0.6"/>
+              <circle cx="102" cy="95" r="7" fill="#FF8DA1" opacity="0.6"/>
+              <!-- Face expression based on mood -->
+              ${mood === 'happy' ? `
+                <path d="M62 86C66 82 72 82 76 86" stroke="#42251D" stroke-width="3" stroke-linecap="round"/>
+                <path d="M84 86C88 82 94 82 98 86" stroke="#42251D" stroke-width="3" stroke-linecap="round"/>
+                <path d="M72 98C76 104 84 104 88 98" stroke="#D81B60" stroke-width="3" stroke-linecap="round"/>
+                <text x="110" y="55" font-size="22">💖</text>
+              ` : mood === 'sad' ? `
+                <path d="M64 88L74 84" stroke="#42251D" stroke-width="3" stroke-linecap="round"/>
+                <path d="M86 84L96 88" stroke="#42251D" stroke-width="3" stroke-linecap="round"/>
+                <path d="M73 102C77 97 83 97 87 102" stroke="#42251D" stroke-width="2.5" stroke-linecap="round"/>
+                <text x="108" y="60" font-size="20">💧</text>
+              ` : `
+                <circle cx="68" cy="86" r="3.5" fill="#42251D"/>
+                <circle cx="92" cy="86" r="3.5" fill="#42251D"/>
+                <path d="M75 97C78 99 82 99 85 97" stroke="#42251D" stroke-width="2.5" stroke-linecap="round"/>
+              `}
+            </svg>
+          `
+        },
+        {
+          id: 'boy_cap',
+          name: '소년 민우',
+          dialogues: ['초밥 10접시도 먹을 수 있어요!', '방금 만든 걸로 골라주세요!', '빨리 주세요 현기증 나요~'],
+          render: (mood) => `
+            <svg viewBox="0 0 160 180" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Body -->
+              <path d="M46 142C46 128 62 124 80 124C98 124 114 128 114 142L118 180H42L46 142Z" fill="#A8DADC" stroke="#8D6E63" stroke-width="2"/>
+              <path d="M68 125L80 140L92 125" fill="#457B9D"/>
+              <!-- Face -->
+              <ellipse cx="80" cy="85" rx="36" ry="34" fill="#FFE5D9" stroke="#8D6E63" stroke-width="2"/>
+              <ellipse cx="44" cy="88" rx="5" ry="8" fill="#FFE5D9" stroke="#8D6E63" stroke-width="1.5"/>
+              <ellipse cx="116" cy="88" rx="5" ry="8" fill="#FFE5D9" stroke="#8D6E63" stroke-width="1.5"/>
+              <!-- Hair & Cap -->
+              <path d="M44 75C46 60 60 52 80 52C100 52 114 60 116 75" fill="#3D3430"/>
+              <!-- Cap backward -->
+              <path d="M48 64C52 44 72 40 88 40C104 40 114 48 114 64Z" fill="#E63946" stroke="#8D6E63" stroke-width="2"/>
+              <path d="M36 65C50 63 90 63 118 65" stroke="#C52838" stroke-width="5" stroke-linecap="round"/>
+              <!-- Blush -->
+              <circle cx="58" cy="94" r="6" fill="#FFAAA6" opacity="0.5"/>
+              <circle cx="102" cy="94" r="6" fill="#FFAAA6" opacity="0.5"/>
+              <!-- Face Expression -->
+              ${mood === 'happy' ? `
+                <path d="M63 85C67 80 73 80 77 85" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+                <path d="M83 85C87 80 93 80 97 85" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+                <ellipse cx="80" cy="98" rx="7" ry="5" fill="#E63946"/>
+                <text x="108" y="52" font-size="22">✨</text>
+              ` : mood === 'sad' ? `
+                <circle cx="68" cy="88" r="3" fill="#333"/>
+                <circle cx="92" cy="88" r="3" fill="#333"/>
+                <path d="M72 102C77 96 83 96 88 102" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+                <text x="106" y="58" font-size="20">💦</text>
+              ` : `
+                <circle cx="68" cy="86" r="3.5" fill="#333"/>
+                <circle cx="92" cy="86" r="3.5" fill="#333"/>
+                <path d="M74 97C78 100 82 100 86 97" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+              `}
+            </svg>
+          `
+        },
+        {
+          id: 'kid_hat',
+          name: '꼬마 손님 동이',
+          dialogues: ['와아! 맛있는 초밥이다!', '사장님 계란초밥 있어요?', '초밥 제일 좋아요!'],
+          render: (mood) => `
+            <svg viewBox="0 0 160 180" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Body -->
+              <path d="M50 144C50 134 62 130 80 130C98 130 110 134 110 144L114 180H46L50 144Z" fill="#FFF275" stroke="#8D6E63" stroke-width="2"/>
+              <!-- Face (Chubby) -->
+              <ellipse cx="80" cy="92" rx="38" ry="32" fill="#FFE5D9" stroke="#8D6E63" stroke-width="2"/>
+              <!-- Yellow Kindergarten Hat -->
+              <ellipse cx="80" cy="64" rx="46" ry="12" fill="#FFE400" stroke="#8D6E63" stroke-width="2"/>
+              <path d="M54 62C54 44 64 36 80 36C96 36 106 44 106 62" fill="#FFE400" stroke="#8D6E63" stroke-width="2"/>
+              <!-- Hat ribbon -->
+              <path d="M54 62C68 65 92 65 106 62" stroke="#FF5722" stroke-width="4"/>
+              <!-- Big Cute Blush -->
+              <circle cx="56" cy="100" r="9" fill="#FF80AB" opacity="0.6"/>
+              <circle cx="104" cy="100" r="9" fill="#FF80AB" opacity="0.6"/>
+              <!-- Expression -->
+              ${mood === 'happy' ? `
+                <path d="M62 90C66 84 72 84 76 90" stroke="#3E2723" stroke-width="3" stroke-linecap="round"/>
+                <path d="M84 90C88 84 94 84 98 90" stroke="#3E2723" stroke-width="3" stroke-linecap="round"/>
+                <path d="M72 101C76 108 84 108 88 101" fill="#FF5252" stroke="#C2185B" stroke-width="2"/>
+                <text x="110" y="55" font-size="22">⭐</text>
+              ` : mood === 'sad' ? `
+                <path d="M62 93C66 90 72 90 76 93" stroke="#3E2723" stroke-width="3" stroke-linecap="round"/>
+                <path d="M84 93C88 90 94 90 98 93" stroke="#3E2723" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="70" cy="104" r="5" fill="#64B5F6"/>
+                <circle cx="90" cy="104" r="5" fill="#64B5F6"/>
+                <text x="108" y="50" font-size="20">😭</text>
+              ` : `
+                <!-- Huge sparkly eyes -->
+                <circle cx="68" cy="90" r="5.5" fill="#3E2723"/>
+                <circle cx="66" cy="88" r="2" fill="#FFF"/>
+                <circle cx="92" cy="90" r="5.5" fill="#3E2723"/>
+                <circle cx="90" cy="88" r="2" fill="#FFF"/>
+                <ellipse cx="80" cy="100" rx="4" ry="3" fill="#D81B60"/>
+              `}
+            </svg>
+          `
+        },
+        {
+          id: 'office_lady',
+          name: '회사원 수진',
+          dialogues: ['점심시간에 힐링하러 왔어요~', '스시는 역시 신선함이 최고죠!', '맛있게 쥐어주세요!'],
+          render: (mood) => `
+            <svg viewBox="0 0 160 180" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Hair back bun -->
+              <ellipse cx="80" cy="48" rx="22" ry="16" fill="#37474F"/>
+              <!-- Clothes -->
+              <path d="M46 142C46 128 60 124 80 124C100 124 114 128 114 142L118 180H42L46 142Z" fill="#D8E2DC" stroke="#8D6E63" stroke-width="2"/>
+              <path d="M70 124L80 144L90 124" fill="#FFE5D9" stroke="#8D6E63" stroke-width="1.5"/>
+              <path d="M78 144L82 180" stroke="#8D6E63" stroke-width="1.5"/>
+              <!-- Face -->
+              <ellipse cx="80" cy="86" rx="34" ry="32" fill="#FFE5D9" stroke="#8D6E63" stroke-width="2"/>
+              <!-- Elegant bangs -->
+              <path d="M46 72C58 56 102 56 114 72C114 72 100 84 80 84C60 84 46 72 46 72Z" fill="#37474F"/>
+              <circle cx="44" cy="94" r="3" fill="#FFD54F"/> <!-- Earring -->
+              <circle cx="116" cy="94" r="3" fill="#FFD54F"/>
+              <!-- Blush -->
+              <circle cx="58" cy="96" r="6" fill="#F48FB1" opacity="0.5"/>
+              <circle cx="102" cy="96" r="6" fill="#F48FB1" opacity="0.5"/>
+              <!-- Expression -->
+              ${mood === 'happy' ? `
+                <path d="M62 86C66 82 72 82 76 86" stroke="#263238" stroke-width="2.8" stroke-linecap="round"/>
+                <path d="M84 86C88 82 94 82 98 86" stroke="#263238" stroke-width="2.8" stroke-linecap="round"/>
+                <path d="M73 98C77 103 83 103 87 98" stroke="#E91E63" stroke-width="2.8" stroke-linecap="round"/>
+                <text x="108" y="56" font-size="22">🌸</text>
+              ` : mood === 'sad' ? `
+                <path d="M64 88L74 85" stroke="#263238" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M86 85L96 88" stroke="#263238" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M74 100C78 97 82 97 86 100" stroke="#263238" stroke-width="2" stroke-linecap="round"/>
+                <text x="106" y="58" font-size="20">🌀</text>
+              ` : `
+                <circle cx="68" cy="86" r="3.2" fill="#263238"/>
+                <circle cx="92" cy="86" r="3.2" fill="#263238"/>
+                <path d="M74 97C78 99 82 99 86 97" stroke="#E91E63" stroke-width="2.2" stroke-linecap="round"/>
+              `}
+            </svg>
+          `
+        },
+        {
+          id: 'gentle_uncle',
+          name: '초밥 미식가 현석',
+          dialogues: ['음~ 밥알의 온도와 쥐임새가 기대되는군!', '정통의 맛을 보여주게나!', '장인의 솜씨를 느껴봅시다.'],
+          render: (mood) => `
+            <svg viewBox="0 0 160 180" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Body -->
+              <path d="M44 142C44 126 60 122 80 122C100 122 116 126 116 142L120 180H40L44 142Z" fill="#90A4AE" stroke="#546E7A" stroke-width="2"/>
+              <!-- Tie -->
+              <path d="M76 124L84 124L82 146L80 152L78 146Z" fill="#E65100"/>
+              <!-- Face -->
+              <ellipse cx="80" cy="86" rx="35" ry="33" fill="#FFE0B2" stroke="#8D6E63" stroke-width="2"/>
+              <!-- Hair & sideburns -->
+              <path d="M46 72C50 50 70 46 86 46C104 46 114 54 114 72" fill="#4E342E"/>
+              <!-- Glasses -->
+              <circle cx="67" cy="86" r="9" fill="none" stroke="#5D4037" stroke-width="2.5"/>
+              <circle cx="93" cy="86" r="9" fill="none" stroke="#5D4037" stroke-width="2.5"/>
+              <path d="M76 86L84 86" stroke="#5D4037" stroke-width="2"/>
+              <!-- Mustache -->
+              <path d="M72 99C76 96 78 97 80 99C82 97 84 96 88 99" stroke="#4E342E" stroke-width="2.5" stroke-linecap="round"/>
+              <!-- Expression -->
+              ${mood === 'happy' ? `
+                <path d="M63 86C66 83 70 83 73 86" stroke="#3E2723" stroke-width="2.5"/>
+                <path d="M87 86C90 83 94 83 97 86" stroke="#3E2723" stroke-width="2.5"/>
+                <path d="M74 105C77 108 83 108 86 105" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+                <text x="110" y="55" font-size="22">👍</text>
+              ` : mood === 'sad' ? `
+                <circle cx="67" cy="86" r="2.5" fill="#3E2723"/>
+                <circle cx="93" cy="86" r="2.5" fill="#3E2723"/>
+                <path d="M74 106C77 103 83 103 86 106" stroke="#3E2723" stroke-width="2" stroke-linecap="round"/>
+                <text x="108" y="58" font-size="20">💦</text>
+              ` : `
+                <circle cx="67" cy="86" r="3" fill="#3E2723"/>
+                <circle cx="93" cy="86" r="3" fill="#3E2723"/>
+                <path d="M76 104L84 104" stroke="#3E2723" stroke-width="2" stroke-linecap="round"/>
+              `}
+            </svg>
+          `
+        }
+      ];
+
+      /* ---------------------------------------------------------
+         3. WEB AUDIO API SYNTHESIZER (No external audio files needed!)
+         Crystal-clear sound effects + cute soothing BGM
+         --------------------------------------------------------- */
+      class SoundController {
+        constructor() {
+          this.audioCtx = null;
+          this.sfxEnabled = true;
+          this.bgmEnabled = true;
+          this.bgmTimer = null;
+          this.bgmStep = 0;
+          this.isBgmPlaying = false;
+        }
+
+        initContext() {
+          if (!this.audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.audioCtx = new AudioContext();
+          }
+          if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+          }
+        }
+
+        // Play Success Chime (Bright Major Chime: C5 -> E5 -> G5 -> C6)
+        playSuccess() {
+          if (!this.sfxEnabled) return;
+          this.initContext();
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, i) => {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime + i * 0.06);
+
+            gain.gain.setValueAtTime(0.2, this.audioCtx.currentTime + i * 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + i * 0.06 + 0.25);
+
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+
+            osc.start(this.audioCtx.currentTime + i * 0.06);
+            osc.stop(this.audioCtx.currentTime + i * 0.06 + 0.3);
+          });
+        }
+
+        // Play Fail Buzzer (Cute wobble buzzer)
+        playFail() {
+          if (!this.sfxEnabled) return;
+          this.initContext();
+          const osc = this.audioCtx.createOscillator();
+          const gain = this.audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(240, this.audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(130, this.audioCtx.currentTime + 0.3);
+
+          gain.gain.setValueAtTime(0.25, this.audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.32);
+
+          osc.connect(gain);
+          gain.connect(this.audioCtx.destination);
+
+          osc.start();
+          osc.stop(this.audioCtx.currentTime + 0.33);
+        }
+
+        // Crisp bubble pop for clicking
+        playPop() {
+          if (!this.sfxEnabled) return;
+          this.initContext();
+          const osc = this.audioCtx.createOscillator();
+          const gain = this.audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(450, this.audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(800, this.audioCtx.currentTime + 0.08);
+
+          gain.gain.setValueAtTime(0.18, this.audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.08);
+
+          osc.connect(gain);
+          gain.connect(this.audioCtx.destination);
+
+          osc.start();
+          osc.stop(this.audioCtx.currentTime + 0.09);
+        }
+
+        // Combo Fanfare
+        playCombo() {
+          if (!this.sfxEnabled) return;
+          this.initContext();
+          const notes = [587.33, 739.99, 880.00, 1174.66];
+          notes.forEach((freq, idx) => {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime + idx * 0.05);
+
+            gain.gain.setValueAtTime(0.18, this.audioCtx.currentTime + idx * 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + idx * 0.05 + 0.3);
+
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+
+            osc.start(this.audioCtx.currentTime + idx * 0.05);
+            osc.stop(this.audioCtx.currentTime + idx * 0.05 + 0.32);
+          });
+        }
+
+        // Urgent 10-second tick
+        playTick() {
+          if (!this.sfxEnabled) return;
+          this.initContext();
+          const osc = this.audioCtx.createOscillator();
+          const gain = this.audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, this.audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.12, this.audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.05);
+          osc.connect(gain);
+          gain.connect(this.audioCtx.destination);
+          osc.start();
+          osc.stop(this.audioCtx.currentTime + 0.05);
+        }
+
+        // Game Over Fanfare
+        playGameOver() {
+          if (!this.sfxEnabled) return;
+          this.initContext();
+          const notes = [523.25, 659.25, 783.99, 1046.50, 880, 1046.50];
+          notes.forEach((freq, i) => {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime + i * 0.12);
+            gain.gain.setValueAtTime(0.2, this.audioCtx.currentTime + i * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + i * 0.12 + 0.35);
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+            osc.start(this.audioCtx.currentTime + i * 0.12);
+            osc.stop(this.audioCtx.currentTime + i * 0.12 + 0.4);
+          });
+        }
+
+        // Gentle Looping Background Music (Kalimba style)
+        startBgm() {
+          if (this.isBgmPlaying || !this.bgmEnabled) return;
+          this.initContext();
+          this.isBgmPlaying = true;
+
+          // Cute 8-measure sushi shop melody (Pentatonic warm notes)
+          const melody = [
+            523.25, 659.25, 783.99, 659.25,
+            880.00, 783.99, 659.25, 523.25,
+            587.33, 659.25, 783.99, 587.33,
+            523.25, 659.25, 523.25, 392.00
+          ];
+
+          const bass = [
+            261.63, 0, 329.63, 0,
+            349.23, 0, 392.00, 0,
+            293.66, 0, 392.00, 0,
+            261.63, 0, 196.00, 0
+          ];
+
+          this.bgmTimer = setInterval(() => {
+            if (!this.bgmEnabled || !this.audioCtx) return;
+            const note = melody[this.bgmStep % melody.length];
+            const bassNote = bass[this.bgmStep % bass.length];
+
+            // Melody note
+            if (note > 0) {
+              const osc = this.audioCtx.createOscillator();
+              const gain = this.audioCtx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(note, this.audioCtx.currentTime);
+              gain.gain.setValueAtTime(0.045, this.audioCtx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.28);
+              osc.connect(gain);
+              gain.connect(this.audioCtx.destination);
+              osc.start();
+              osc.stop(this.audioCtx.currentTime + 0.3);
+            }
+
+            // Bass note
+            if (bassNote > 0) {
+              const bOsc = this.audioCtx.createOscillator();
+              const bGain = this.audioCtx.createGain();
+              bOsc.type = 'triangle';
+              bOsc.frequency.setValueAtTime(bassNote, this.audioCtx.currentTime);
+              bGain.gain.setValueAtTime(0.035, this.audioCtx.currentTime);
+              bGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.4);
+              bOsc.connect(bGain);
+              bGain.connect(this.audioCtx.destination);
+              bOsc.start();
+              bOsc.stop(this.audioCtx.currentTime + 0.42);
+            }
+
+            this.bgmStep++;
+          }, 320);
+        }
+
+        stopBgm() {
+          if (this.bgmTimer) {
+            clearInterval(this.bgmTimer);
+            this.bgmTimer = null;
+          }
+          this.isBgmPlaying = false;
+        }
+
+        toggleBgm() {
+          this.bgmEnabled = !this.bgmEnabled;
+          if (this.bgmEnabled) {
+            this.startBgm();
+          } else {
+            this.stopBgm();
+          }
+          return this.bgmEnabled;
+        }
+
+        toggleSfx() {
+          this.sfxEnabled = !this.sfxEnabled;
+          return this.sfxEnabled;
+        }
+      }
+
+      /* ---------------------------------------------------------
+         4. STORAGE & DEFAULT LEADERBOARD
+         --------------------------------------------------------- */
+      const STORAGE_KEY = 'SUSHI_MASTER_LEADERBOARD_V1';
+
+      const DEFAULT_RANKINGS = [
+        { name: '초밥의신🍣', score: 380, date: '2026.10.15' },
+        { name: '연어러버', score: 320, date: '2026.10.15' },
+        { name: '와사비폭탄', score: 270, date: '2026.10.16' },
+        { name: '참치대마왕', score: 230, date: '2026.10.14' },
+        { name: '새우깡', score: 180, date: '2026.10.16' },
+        { name: '계란말이달인', score: 140, date: '2026.10.13' },
+        { name: '초보요리사', score: 100, date: '2026.10.12' }
+      ];
+
+      function getLeaderboard() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              return parsed;
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+        return [...DEFAULT_RANKINGS];
+      }
+
+      function saveLeaderboard(list) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      function addScoreToLeaderboard(nickname, score) {
+        const list = getLeaderboard();
+        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '.');
+        const newEntry = { name: nickname.trim() || '무명요리사', score: score, date: dateStr };
+        list.push(newEntry);
+        list.sort((a, b) => b.score - a.score);
+        const top10 = list.slice(0, 10);
+        saveLeaderboard(top10);
+        return top10;
+      }
+
+      /* ---------------------------------------------------------
+         5. GAME STATE & CONTROLLER
+         --------------------------------------------------------- */
+      const sounds = new SoundController();
+
+      const state = {
+        screen: 'TITLE', // 'TITLE', 'PLAY', 'RESULT'
+        score: 0,
+        timeLeft: 60,
+        gameInterval: null,
+        successCount: 0,
+        failCount: 0,
+        combo: 0,
+        maxCombo: 0,
+        currentCustomer: null,
+        currentOrder: null,
+        isServingAnimation: false,
+        lastSubmittedRankIdx: -1
+      };
+
+      // DOM Elements
+      const screenTitle = document.getElementById('screen-title');
+      const screenPlay = document.getElementById('screen-play');
+      const modalResult = document.getElementById('modal-result');
+
+      const hudTimer = document.getElementById('hud-timer');
+      const hudTimerContainer = document.getElementById('hud-timer-container');
+      const hudScore = document.getElementById('hud-score');
+      const hudComboPill = document.getElementById('hud-combo-pill');
+      const timerBarFill = document.getElementById('timer-bar-fill');
+
+      const orderSushiIcon = document.getElementById('order-sushi-icon');
+      const orderSushiName = document.getElementById('order-sushi-name');
+      const customerDialogue = document.getElementById('customer-dialogue');
+      const customerAvatarWrap = document.getElementById('customer-avatar-wrap');
+      const orderBubble = document.getElementById('order-bubble');
+      const servingPlateContent = document.getElementById('serving-plate-content');
+      const servingPlate = document.getElementById('serving-plate');
+      const floatingFeedbackContainer = document.getElementById('floating-feedback-container');
+
+      const titleCarousel = document.getElementById('title-carousel');
+      const btnStartGame = document.getElementById('btn-start-game');
+      const btnViewLeaderboard = document.getElementById('btn-view-leaderboard');
+      const btnToggleBgm = document.getElementById('btn-toggle-bgm');
+      const btnToggleSfx = document.getElementById('btn-toggle-sfx');
+      const btnPlayBgmToggle = document.getElementById('btn-play-bgm-toggle');
+      const btnPlaySfxToggle = document.getElementById('btn-play-sfx-toggle');
+
+      const summaryFinalScore = document.getElementById('summary-final-score');
+      const summaryStats = document.getElementById('summary-stats');
+      const summaryCombo = document.getElementById('summary-combo');
+      const playerNicknameInput = document.getElementById('player-nickname');
+      const btnSaveScore = document.getElementById('btn-save-score');
+      const saveScoreSection = document.getElementById('save-score-section');
+      const rankingListItems = document.getElementById('ranking-list-items');
+      const btnPlayAgain = document.getElementById('btn-play-again');
+      const btnModalToTitle = document.getElementById('btn-modal-to-title');
+      const resultTitle = document.getElementById('result-title');
+      const resultSubtitle = document.getElementById('result-subtitle');
+      const resultIcon = document.getElementById('result-icon');
+
+      /* ---------------------------------------------------------
+         6. INITIALIZATION & UI SETUP
+         --------------------------------------------------------- */
+      function initApp() {
+        // Render Sushi preview icons in title screen carousel
+        titleCarousel.innerHTML = SUSHIS.map(s => `
+          <div class="sushi-icon-wrapper" title="${s.name}">
+            ${s.svg}
+          </div>
+        `).join('');
+
+        // Render Sushi icons into chef buttons
+        SUSHIS.forEach(s => {
+          const container = document.getElementById(`btn-icon-${s.id}`);
+          if (container) {
+            container.innerHTML = `<div class="sushi-icon-svg">${s.svg}</div>`;
+          }
+        });
+
+        attachEventListeners();
+      }
+
+      function attachEventListeners() {
+        // Start game button
+        btnStartGame.addEventListener('click', () => {
+          sounds.playPop();
+          sounds.startBgm();
+          startGame();
+        });
+
+        // View leaderboard from title
+        btnViewLeaderboard.addEventListener('click', () => {
+          sounds.playPop();
+          showLeaderboardModal(false);
+        });
+
+        // Audio controls
+        function updateAudioButtons() {
+          const sfxOn = sounds.sfxEnabled;
+          const bgmOn = sounds.bgmEnabled;
+
+          [btnToggleSfx, btnPlaySfxToggle].forEach(btn => {
+            btn.textContent = sfxOn ? '🔔' : '🔕';
+            btn.classList.toggle('muted', !sfxOn);
+          });
+
+          [btnToggleBgm, btnPlayBgmToggle].forEach(btn => {
+            btn.textContent = bgmOn ? '🎵' : '🔇';
+            btn.classList.toggle('muted', !bgmOn);
+          });
+        }
+
+        [btnToggleBgm, btnPlayBgmToggle].forEach(b => {
+          b.addEventListener('click', () => {
+            sounds.toggleBgm();
+            updateAudioButtons();
+          });
+        });
+
+        [btnToggleSfx, btnPlaySfxToggle].forEach(b => {
+          b.addEventListener('click', () => {
+            sounds.toggleSfx();
+            updateAudioButtons();
+          });
+        });
+
+        // Sushi Card Buttons Click
+        document.querySelectorAll('.sushi-card-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const sushiId = btn.dataset.sushi;
+            handleSushiServe(sushiId);
+          });
+        });
+
+        // Keyboard [1] ~ [5] shortcuts
+        window.addEventListener('keydown', (e) => {
+          if (state.screen !== 'PLAY' || state.isServingAnimation) return;
+          const keyNum = parseInt(e.key, 10);
+          if (keyNum >= 1 && keyNum <= 5) {
+            const targetSushi = SUSHIS[keyNum - 1];
+            if (targetSushi) {
+              const btn = document.querySelector(`.sushi-card-btn[data-sushi="${targetSushi.id}"]`);
+              if (btn) {
+                btn.classList.add('active');
+                setTimeout(() => btn.classList.remove('active'), 120);
+              }
+              handleSushiServe(targetSushi.id);
+            }
+          }
+        });
+
+        // Modal Action Buttons
+        btnSaveScore.addEventListener('click', () => {
+          sounds.playPop();
+          handleRegisterScore();
+        });
+
+        playerNicknameInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            sounds.playPop();
+            handleRegisterScore();
+          }
+        });
+
+        btnPlayAgain.addEventListener('click', () => {
+          sounds.playPop();
+          modalResult.classList.remove('active');
+          startGame();
+        });
+
+        btnModalToTitle.addEventListener('click', () => {
+          sounds.playPop();
+          modalResult.classList.remove('active');
+          switchToScreen('TITLE');
+        });
+      }
+
+      function switchToScreen(scr) {
+        state.screen = scr;
+        screenTitle.classList.toggle('active', scr === 'TITLE');
+        screenPlay.classList.toggle('active', scr === 'PLAY');
+      }
+
+      /* ---------------------------------------------------------
+         7. GAMEPLAY LOOP & LOGIC
+         --------------------------------------------------------- */
+      function startGame() {
+        // Reset state
+        state.score = 0;
+        state.timeLeft = 60;
+        state.successCount = 0;
+        state.failCount = 0;
+        state.combo = 0;
+        state.maxCombo = 0;
+        state.isServingAnimation = false;
+        state.lastSubmittedRankIdx = -1;
+
+        updateHUD();
+        switchToScreen('PLAY');
+
+        // Spawn first customer
+        nextCustomer();
+
+        // Start 1-minute countdown timer
+        if (state.gameInterval) clearInterval(state.gameInterval);
+        state.gameInterval = setInterval(gameTick, 1000);
+      }
+
+      function gameTick() {
+        state.timeLeft--;
+        updateHUD();
+
+        // Warning sound when <= 10s
+        if (state.timeLeft <= 10 && state.timeLeft > 0) {
+          sounds.playTick();
+        }
+
+        if (state.timeLeft <= 0) {
+          clearInterval(state.gameInterval);
+          state.gameInterval = null;
+          endGame();
+        }
+      }
+
+      function updateHUD() {
+        // Format time 00:00
+        const m = Math.floor(state.timeLeft / 60);
+        const s = state.timeLeft % 60;
+        const timeFormatted = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        hudTimer.textContent = timeFormatted;
+
+        // Progress fill
+        const pct = (state.timeLeft / 60) * 100;
+        timerBarFill.style.width = `${Math.max(0, pct)}%`;
+
+        // Urgent warning pulse
+        hudTimerContainer.classList.toggle('urgent', state.timeLeft <= 10 && state.timeLeft > 0);
+
+        // Score display
+        hudScore.textContent = state.score;
+
+        // Combo Pill
+        if (state.combo >= 2) {
+          hudComboPill.textContent = `🔥 COMBO x${state.combo}!`;
+          hudComboPill.classList.add('active');
+        } else {
+          hudComboPill.classList.remove('active');
+        }
+      }
+
+      // Customer spawning
+      function nextCustomer() {
+        // Pick random customer
+        const customer = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
+        // Pick random sushi order
+        const sushi = SUSHIS[Math.floor(Math.random() * SUSHIS.length)];
+        const dialogue = customer.dialogues[Math.floor(Math.random() * customer.dialogues.length)];
+
+        state.currentCustomer = customer;
+        state.currentOrder = sushi;
+
+        // Render customer avatar with normal mood
+        customerAvatarWrap.className = 'customer-avatar-wrap customer-entering';
+        customerAvatarWrap.innerHTML = customer.render('normal');
+
+        // Render order balloon
+        orderSushiIcon.innerHTML = sushi.svg;
+        orderSushiName.textContent = sushi.name;
+        customerDialogue.textContent = dialogue;
+
+        // Clear serving plate
+        servingPlateContent.innerHTML = '';
+      }
+
+      // Handling Sushi Serving
+      function handleSushiServe(servedSushiId) {
+        if (state.screen !== 'PLAY' || state.isServingAnimation) return;
+        state.isServingAnimation = true;
+
+        const servedSushi = SUSHIS.find(s => s.id === servedSushiId);
+        const isMatch = (servedSushiId === state.currentOrder.id);
+
+        // Place sushi on plate with animation
+        servingPlateContent.innerHTML = servedSushi.svg;
+        servingPlate.classList.add('serve-glow');
+        setTimeout(() => servingPlate.classList.remove('serve-glow'), 300);
+
+        if (isMatch) {
+          // --- ACCURATE SERVING (+10 Points) ---
+          state.score += 10;
+          state.successCount++;
+          state.combo++;
+          if (state.combo > state.maxCombo) {
+            state.maxCombo = state.combo;
+          }
+
+          sounds.playSuccess();
+          if (state.combo >= 3) {
+            setTimeout(() => sounds.playCombo(), 120);
+          }
+
+          showFloatingFeedback(`+10`, 'positive');
+
+          // Happy customer animation
+          customerAvatarWrap.innerHTML = state.currentCustomer.render('happy');
+          customerDialogue.textContent = '우와 너무 맛있어요! ❤️';
+
+          setTimeout(() => {
+            customerAvatarWrap.className = 'customer-avatar-wrap customer-leaving-happy';
+            setTimeout(() => {
+              nextCustomer();
+              state.isServingAnimation = false;
+            }, 350);
+          }, 380);
+
+        } else {
+          // --- WRONG SERVING (-10 Points) ---
+          state.score = Math.max(0, state.score - 10);
+          state.failCount++;
+          state.combo = 0; // combo break
+
+          sounds.playFail();
+          showFloatingFeedback(`-10`, 'negative');
+
+          // Disappointed customer animation
+          customerAvatarWrap.innerHTML = state.currentCustomer.render('sad');
+          customerDialogue.textContent = '이건 제가 주문한 게 아니에요... 💦';
+
+          setTimeout(() => {
+            customerAvatarWrap.className = 'customer-avatar-wrap customer-leaving-sad';
+            setTimeout(() => {
+              nextCustomer();
+              state.isServingAnimation = false;
+            }, 400);
+          }, 450);
+        }
+
+        updateHUD();
+      }
+
+      // Floating +10 / -10 animation
+      function showFloatingFeedback(text, type) {
+        const el = document.createElement('div');
+        el.className = `floating-feedback ${type}`;
+        el.textContent = text;
+        floatingFeedbackContainer.appendChild(el);
+
+        setTimeout(() => {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }, 750);
+      }
+
+      /* ---------------------------------------------------------
+         8. GAME OVER & LEADERBOARD MODAL
+         --------------------------------------------------------- */
+      function endGame() {
+        sounds.playGameOver();
+        showLeaderboardModal(true);
+      }
+
+      function showLeaderboardModal(isGameOver) {
+        if (isGameOver) {
+          resultIcon.textContent = '🏆';
+          resultTitle.textContent = '영업 종료!';
+          resultSubtitle.textContent = '1분 동안 정말 훌륭하게 초밥을 쥐었습니다!';
+          saveScoreSection.style.display = 'flex';
+          saveScoreSection.classList.remove('submitted');
+        } else {
+          resultIcon.textContent = '👑';
+          resultTitle.textContent = '명예의 전당';
+          resultSubtitle.textContent = '스시 마스터 역대 최고 득점자 순위';
+          saveScoreSection.style.display = 'none';
+        }
+
+        summaryFinalScore.textContent = `${state.score}점`;
+        summaryStats.textContent = `${state.successCount} / ${state.failCount}`;
+        summaryCombo.textContent = `${state.maxCombo}회`;
+
+        renderRankingTable(getLeaderboard());
+        modalResult.classList.add('active');
+      }
+
+      function renderRankingTable(list, highlightIdx = -1) {
+        rankingListItems.innerHTML = list.map((entry, idx) => {
+          const rank = idx + 1;
+          const isHighlight = (idx === highlightIdx);
+          let rankBadge = `${rank}`;
+          if (rank === 1) rankBadge = '🥇';
+          else if (rank === 2) rankBadge = '🥈';
+          else if (rank === 3) rankBadge = '🥉';
+
+          return `
+            <li class="ranking-row ${isHighlight ? 'current-player' : ''}">
+              <span class="rank-num rank-${rank}">${rankBadge}</span>
+              <span class="rank-name">${escapeHtml(entry.name)}</span>
+              <span class="rank-score">${entry.score}점</span>
+            </li>
+          `;
+        }).join('');
+      }
+
+      function handleRegisterScore() {
+        const nick = playerNicknameInput.value.trim() || '스시마스터';
+        const updatedList = addScoreToLeaderboard(nick, state.score);
+
+        // Find index of this newly saved record
+        const foundIdx = updatedList.findIndex(e => e.name === nick && e.score === state.score);
+        state.lastSubmittedRankIdx = foundIdx;
+
+        renderRankingTable(updatedList, foundIdx);
+        saveScoreSection.classList.add('submitted');
+        sounds.playSuccess();
+      }
+
+      function escapeHtml(str) {
+        return str.replace(/[&<>"']/g, function(m) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
+      }
+
+      // Start on page load
+      window.addEventListener('DOMContentLoaded', () => {
+        initApp();
+      });
+
+    })();
+  </script>
+</body>
+</html>
