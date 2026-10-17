@@ -57,9 +57,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding: 16px 12px 60px;
       overflow-x: hidden;
       position: relative;
+      gap: 20px;
     }
 
     /* Ambient background Japanese wave/dots motif */
@@ -1064,6 +1066,249 @@
         height: 150px;
       }
     }
+
+    /* =========================================================
+       DUAL-PANEL DASHBOARD (LEFT: STUDENTS, RIGHT: SCORES)
+       ========================================================= */
+    .dashboard-panel {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 960px;
+      background: #FFFFFF;
+      border: 4px solid #F0DFCE;
+      border-radius: 26px;
+      box-shadow: 0 16px 36px rgba(90, 60, 40, 0.1), 0 2px 6px rgba(90, 60, 40, 0.06);
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 10px auto 20px;
+    }
+
+    .dash-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 2px solid #F5ECE3;
+      padding-bottom: 14px;
+    }
+
+    .dash-header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dash-icon {
+      font-size: 32px;
+      background: #FFF3E6;
+      border: 2px solid #F5D6CE;
+      border-radius: 14px;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dash-header-title h3 {
+      font-size: 22px;
+      color: #372826;
+      margin-bottom: 2px;
+    }
+
+    .dash-header-title p {
+      font-size: 13px;
+      color: #796665;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .dash-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dash-btn {
+      background: #FF6F61;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-family: 'Jua', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #D32F2F;
+      transition: all 0.1s;
+      white-space: nowrap;
+    }
+    .dash-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #D32F2F;
+    }
+
+    .dash-btn-outline {
+      background: #FFF;
+      color: #6D4C41;
+      border: 2px solid #E4CDBC;
+      box-shadow: 0 3px 0 #D0B8A5;
+    }
+    .dash-btn-outline:active {
+      box-shadow: 0 1px 0 #D0B8A5;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dashboard-column {
+      background: #FFFDF9;
+      border: 2px solid #EEDBC9;
+      border-radius: 18px;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 10px rgba(110, 70, 50, 0.04);
+    }
+
+    .dash-col-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dash-col-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      color: #42251D;
+    }
+
+    .step-num {
+      background: #E64A45;
+      color: #FFF;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .dash-col-desc {
+      font-size: 12px;
+      color: #8D6E63;
+      font-family: 'Noto Sans KR', sans-serif;
+      margin-top: -4px;
+    }
+
+    .badge {
+      background: #FDE8E5;
+      color: #D32F2F;
+      border: 1px solid #FFAAA6;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .badge-success {
+      background: #E8F5E9;
+      color: #2E7D32;
+      border-color: #A5D6A7;
+    }
+
+    .dash-textarea {
+      width: 100%;
+      height: 230px;
+      border: 2px solid #E0CEBE;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #372826;
+      background: #FFFFFF;
+      resize: vertical;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+    }
+    .dash-textarea:focus {
+      border-color: #E64A45;
+      box-shadow: 0 0 0 3px rgba(230, 74, 69, 0.12);
+    }
+
+    .dash-readonly {
+      background: #FAF7F2;
+      color: #4E342E;
+      cursor: default;
+      border-color: #E4D5C5;
+      font-family: 'Noto Sans KR', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+    .dash-readonly:focus {
+      border-color: #E4D5C5;
+      box-shadow: none;
+    }
+
+    .dash-col-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 2px;
+      flex-wrap: wrap;
+    }
+
+    .next-student-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #5D4037;
+    }
+
+    .student-dropdown {
+      border: 2px solid #D5C1AE;
+      border-radius: 10px;
+      padding: 5px 10px;
+      font-family: 'Jua', sans-serif;
+      font-size: 14px;
+      color: #372826;
+      background: #FFF;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .dash-btn-mini {
+      background: #F4E7DA;
+      color: #6D4C41;
+      border: 1px solid #D7C0AD;
+      border-radius: 10px;
+      padding: 5px 10px;
+      font-family: 'Jua', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .dash-btn-mini:hover {
+      background: #EAD8C7;
+    }
   </style>
 </head>
 <body>
@@ -1129,6 +1374,7 @@
         <div class="sound-toggle-bar">
           <button id="btn-toggle-bgm" class="icon-btn" title="배경음악 켜기/끄기">🎵</button>
           <button id="btn-toggle-sfx" class="icon-btn" title="효과음 켜기/끄기">🔔</button>
+          <button id="btn-open-sheet-settings" class="icon-btn" title="구글 스프레드시트 연동 설정">📊</button>
         </div>
       </div>
     </div>
@@ -1331,10 +1577,122 @@
           </button>
         </div>
 
+        <!-- Google Sheet quick status -->
+        <div style="margin-top: 12px; font-size: 13px; color: #8D6E63;">
+          <span id="sheet-sync-status">📊 구글 스프레드시트: 미설정</span>
+          <button id="btn-open-sheet-from-modal" style="background:none; border:none; color:#E64A45; font-family:'Jua',sans-serif; cursor:pointer; text-decoration:underline; margin-left:6px;">[설정하기]</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 4. GOOGLE SHEETS CONFIG MODAL -->
+    <div id="modal-sheet-config" class="modal-overlay">
+      <div class="modal-window" style="max-width: 440px;">
+        <div class="modal-header-icon">📊</div>
+        <h2 class="modal-title" style="font-size: 26px;">구글 스프레드시트 연동</h2>
+        <p class="modal-subtitle">게임 점수가 내 구글 스프레드시트에 자동 기록됩니다!</p>
+
+        <div style="width: 100%; text-align: left; background: #FFF9F2; border: 2px solid #F0DFCE; border-radius: 14px; padding: 12px; font-size: 13px; line-height: 1.5; color: #5D4037; margin-bottom: 14px;">
+          <strong>💡 연동 방법 요약:</strong><br>
+          1. 구글 스프레드시트 생성<br>
+          2. [확장 프로그램] → [Apps Script]에 웹앱 코드 입력<br>
+          3. [새 배포] → 웹앱 URL을 아래에 붙여넣기!
+        </div>
+
+        <div style="width: 100%; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+          <label style="font-size: 13px; font-weight: bold; color: #5D4037; text-align: left;">구글 Apps Script 웹앱 URL (Web App URL):</label>
+          <input type="url" id="sheet-webapp-url-input" class="nickname-input" style="font-size: 14px;" placeholder="https://script.google.com/macros/s/.../exec">
+          <div id="sheet-test-result" style="font-size: 13px; font-weight: bold; min-height: 20px;"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btn-save-sheet-url" class="btn btn-primary" style="font-size: 17px; padding: 11px 18px;">
+            <span>연동 URL 저장</span>
+          </button>
+          <button id="btn-close-sheet-modal" class="btn btn-secondary" style="font-size: 15px; padding: 11px 18px;">
+            <span>닫기</span>
+          </button>
+        </div>
       </div>
     </div>
 
   </div>
+
+  <!-- =========================================================
+       STUDENT MANAGEMENT & SCORE RECORD DASHBOARD (DUAL-PANEL)
+       ========================================================= -->
+  <section class="dashboard-panel" id="student-score-dashboard">
+    <div class="dash-top-bar">
+      <div class="dash-header-title">
+        <span class="dash-icon">🏫</span>
+        <div>
+          <h3>학생 명단 & 게임 점수 실시간 현황판</h3>
+          <p>구글 스프레드시트 / 앱시트 연동 및 수업용 실시간 기록 대시보드</p>
+        </div>
+      </div>
+      <div class="dash-header-actions">
+        <button id="btn-copy-score-log" class="dash-btn" title="오른쪽 결과 전체 복사">📋 점수 결과 복사</button>
+        <button id="btn-clear-score-log" class="dash-btn dash-btn-outline" title="결과 기록 비우기">🗑️ 결과 초기화</button>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <!-- 1. 왼쪽 영역: 학생 이름 목록 (줄바꿈 입력) -->
+      <div class="dashboard-column">
+        <div class="dash-col-header">
+          <span class="dash-col-title">
+            <span class="step-num">1</span>
+            <strong>왼쪽 영역: 학생 이름 목록</strong>
+          </span>
+          <span class="badge" id="student-names-count">10명 등록</span>
+        </div>
+        <p class="dash-col-desc">학생 이름을 줄바꿈(엔터)으로 입력하세요. (기본 예시 10명 제공)</p>
+        
+        <textarea id="student-names-textarea" class="dash-textarea" spellcheck="false" placeholder="학생 이름을 줄바꿈(엔터)으로 입력하세요...&#10;예:&#10;김민준&#10;이서아">김민준
+이서아
+박도윤
+최지우
+정예준
+강하은
+윤지호
+조수아
+한서준
+오유진</textarea>
+
+        <div class="dash-col-footer">
+          <div class="next-student-box">
+            <span class="label">🎯 현재/다음 플레이 학생:</span>
+            <select id="select-active-student" class="student-dropdown">
+              <!-- Dynamically populated from textarea -->
+            </select>
+          </div>
+          <button id="btn-reset-sample-students" class="dash-btn-mini" title="기본 10명으로 초기화">예시 10명 복원</button>
+        </div>
+      </div>
+
+      <!-- 2. 오른쪽 영역: 게임 점수 결과 자동 입력창 (입력 및 수정 불가) -->
+      <div class="dashboard-column">
+        <div class="dash-col-header">
+          <span class="dash-col-title">
+            <span class="step-num">2</span>
+            <strong>오른쪽 영역: 게임 점수 결과 (자동 기록)</strong>
+          </span>
+          <span class="badge badge-success" id="score-records-count">0건 완료</span>
+        </div>
+        <p class="dash-col-desc">게임 1분이 끝나면 결과가 자동으로 기록됩니다. (입력 및 수정 불가)</p>
+
+        <textarea id="score-results-textarea" class="dash-textarea dash-readonly" readonly placeholder="아직 완료된 게임 결과가 없습니다.&#10;1분 게임이 끝나면 날짜, 학생 이름, 점수, 성공/실패 횟수, 최대 콤보가 이곳에 실시간 자동 기록됩니다.&#10;(구글 스프레드시트/앱시트 전송 데이터와 100% 동일하게 보존됨)"></textarea>
+
+        <div class="dash-col-footer">
+          <div class="next-student-box">
+            <span id="dash-sheet-sync-tag" style="font-size: 13px; color: #5D4037;">📊 구글 시트: 로컬 저장 모드</span>
+          </div>
+          <button id="btn-open-sheet-from-dash" class="dash-btn-mini" style="background:#FFE6E4; color:#E64A45; border-color:#FFCDD2; font-weight:bold;">⚙️ 구글 시트 연동 설정</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- =========================================================
        COMPLETE JAVASCRIPT GAME ENGINE & AUDIO SYNTHESIS
@@ -1888,9 +2246,27 @@
       }
 
       /* ---------------------------------------------------------
-         4. STORAGE & DEFAULT LEADERBOARD
+         4. STORAGE, LEADERBOARD & GOOGLE APPS SCRIPT SYNC
          --------------------------------------------------------- */
       const STORAGE_KEY = 'SUSHI_MASTER_LEADERBOARD_V1';
+      const GOOGLE_SHEET_KEY = 'SUSHI_GOOGLE_SHEET_WEBAPP_URL_V1';
+      const STORAGE_STUDENTS_KEY = 'SUSHI_STUDENT_NAMES_V1';
+      const STORAGE_SCORE_LOG_KEY = 'SUSHI_SCORE_LOG_V1';
+      
+      let googleSheetWebappUrl = localStorage.getItem(GOOGLE_SHEET_KEY) || '';
+
+      const DEFAULT_STUDENT_NAMES = [
+        '김민준',
+        '이서아',
+        '박도윤',
+        '최지우',
+        '정예준',
+        '강하은',
+        '윤지호',
+        '조수아',
+        '한서준',
+        '오유진'
+      ];
 
       const DEFAULT_RANKINGS = [
         { name: '초밥의신🍣', score: 380, date: '2026.10.15' },
@@ -1934,6 +2310,29 @@
         const top10 = list.slice(0, 10);
         saveLeaderboard(top10);
         return top10;
+      }
+
+      function updateSheetStatusDisplay() {
+        const statusEl = document.getElementById('sheet-sync-status');
+        const dashSheetSyncTag = document.getElementById('dash-sheet-sync-tag');
+        if (statusEl) {
+          if (googleSheetWebappUrl) {
+            statusEl.textContent = '📊 구글 스프레드시트: 실시간 자동 연동 중 🟢';
+            statusEl.style.color = '#2E7D32';
+          } else {
+            statusEl.textContent = '📊 구글 스프레드시트: 미설정';
+            statusEl.style.color = '#8D6E63';
+          }
+        }
+        if (dashSheetSyncTag) {
+          if (googleSheetWebappUrl) {
+            dashSheetSyncTag.textContent = '📊 구글 시트: 실시간 자동 전송 중 🟢';
+            dashSheetSyncTag.style.color = '#2E7D32';
+          } else {
+            dashSheetSyncTag.textContent = '📊 구글 시트: 로컬 저장 모드 (상단 버튼으로 연동 가능)';
+            dashSheetSyncTag.style.color = '#5D4037';
+          }
+        }
       }
 
       /* ---------------------------------------------------------
@@ -2016,7 +2415,190 @@
           }
         });
 
+        // Dashboard Element References
+        const studentNamesTextarea = document.getElementById('student-names-textarea');
+        const selectActiveStudent = document.getElementById('select-active-student');
+        const studentNamesCount = document.getElementById('student-names-count');
+        const scoreResultsTextarea = document.getElementById('score-results-textarea');
+        const scoreRecordsCount = document.getElementById('score-records-count');
+        const btnCopyScoreLog = document.getElementById('btn-copy-score-log');
+        const btnClearScoreLog = document.getElementById('btn-clear-score-log');
+        const btnResetSampleStudents = document.getElementById('btn-reset-sample-students');
+        const btnOpenSheetFromDash = document.getElementById('btn-open-sheet-from-dash');
+
+        function getStudentList() {
+          const text = studentNamesTextarea ? studentNamesTextarea.value : '';
+          return text
+            .split('\n')
+            .map(s => s.trim())
+            .filter(s => s.length > 0);
+        }
+
+        function updateStudentDropdown(preserveSelection = true) {
+          const currentSelected = selectActiveStudent ? selectActiveStudent.value : '';
+          const list = getStudentList();
+          if (studentNamesCount) {
+            studentNamesCount.textContent = `${list.length}명 등록`;
+          }
+
+          if (!selectActiveStudent) return;
+          selectActiveStudent.innerHTML = '';
+          if (list.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = '(학생 이름을 입력해주세요)';
+            selectActiveStudent.appendChild(opt);
+            return;
+          }
+
+          list.forEach((name, idx) => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = `${idx + 1}. ${name}`;
+            selectActiveStudent.appendChild(opt);
+          });
+
+          if (preserveSelection && list.includes(currentSelected)) {
+            selectActiveStudent.value = currentSelected;
+          } else if (list.length > 0) {
+            selectActiveStudent.value = list[0];
+          }
+        }
+
+        function saveStudentNames() {
+          if (studentNamesTextarea) {
+            localStorage.setItem(STORAGE_STUDENTS_KEY, studentNamesTextarea.value);
+          }
+        }
+
+        function loadStudentNames() {
+          const saved = localStorage.getItem(STORAGE_STUDENTS_KEY);
+          if (saved !== null && studentNamesTextarea) {
+            studentNamesTextarea.value = saved;
+          } else if (studentNamesTextarea) {
+            studentNamesTextarea.value = DEFAULT_STUDENT_NAMES.join('\n');
+          }
+          updateStudentDropdown();
+        }
+
+        function updateScoreRecordCount() {
+          if (!scoreResultsTextarea || !scoreRecordsCount) return;
+          const text = scoreResultsTextarea.value.trim();
+          if (!text) {
+            scoreRecordsCount.textContent = '0건 완료';
+            return;
+          }
+          const lines = text.split('\n').filter(l => l.trim().length > 0);
+          scoreRecordsCount.textContent = `${lines.length}건 완료`;
+        }
+
+        function loadScoreLog() {
+          const savedLog = localStorage.getItem(STORAGE_SCORE_LOG_KEY);
+          if (savedLog && scoreResultsTextarea) {
+            scoreResultsTextarea.value = savedLog;
+          }
+          updateScoreRecordCount();
+        }
+
+        window.appendScoreLogEntry = function(entry) {
+          if (!scoreResultsTextarea) return;
+          const current = scoreResultsTextarea.value.trim();
+          const updated = current ? current + '\n' + entry : entry;
+          scoreResultsTextarea.value = updated;
+          localStorage.setItem(STORAGE_SCORE_LOG_KEY, updated);
+          scoreResultsTextarea.scrollTop = scoreResultsTextarea.scrollHeight;
+          updateScoreRecordCount();
+        };
+
+        window.advanceToNextStudent = function() {
+          if (!selectActiveStudent) return;
+          const list = getStudentList();
+          if (list.length <= 1) return;
+          const currentIdx = list.indexOf(selectActiveStudent.value);
+          if (currentIdx >= 0 && currentIdx < list.length - 1) {
+            selectActiveStudent.value = list[currentIdx + 1];
+          } else {
+            selectActiveStudent.value = list[0];
+          }
+        };
+
+        window.getCurrentActiveStudent = function() {
+          return selectActiveStudent ? selectActiveStudent.value : '';
+        };
+
+        // Student Textarea Events
+        if (studentNamesTextarea) {
+          studentNamesTextarea.addEventListener('input', () => {
+            saveStudentNames();
+            updateStudentDropdown(true);
+          });
+        }
+
+        // Reset default sample students button
+        if (btnResetSampleStudents) {
+          btnResetSampleStudents.addEventListener('click', () => {
+            sounds.playPop();
+            if (studentNamesTextarea) {
+              studentNamesTextarea.value = DEFAULT_STUDENT_NAMES.join('\n');
+              saveStudentNames();
+              updateStudentDropdown(false);
+            }
+          });
+        }
+
+        // Copy Score Log
+        if (btnCopyScoreLog) {
+          btnCopyScoreLog.addEventListener('click', () => {
+            sounds.playPop();
+            if (!scoreResultsTextarea || !scoreResultsTextarea.value.trim()) {
+              alert('복사할 점수 결과가 아직 없습니다.');
+              return;
+            }
+            navigator.clipboard.writeText(scoreResultsTextarea.value).then(() => {
+              const orig = btnCopyScoreLog.textContent;
+              btnCopyScoreLog.textContent = '✅ 복사 완료!';
+              setTimeout(() => {
+                btnCopyScoreLog.textContent = orig;
+              }, 1500);
+            }).catch(() => {
+              scoreResultsTextarea.select();
+              document.execCommand('copy');
+              alert('점수 결과가 클립보드에 복사되었습니다!');
+            });
+          });
+        }
+
+        // Clear Score Log
+        if (btnClearScoreLog) {
+          btnClearScoreLog.addEventListener('click', () => {
+            sounds.playPop();
+            if (confirm('모든 점수 결과 기록을 초기화하시겠습니까?')) {
+              if (scoreResultsTextarea) scoreResultsTextarea.value = '';
+              localStorage.removeItem(STORAGE_SCORE_LOG_KEY);
+              updateScoreRecordCount();
+            }
+          });
+        }
+
+        // Open sheet config from dash
+        if (btnOpenSheetFromDash) {
+          btnOpenSheetFromDash.addEventListener('click', () => {
+            sounds.playPop();
+            const modalSheetConfig = document.getElementById('modal-sheet-config');
+            const sheetWebappUrlInput = document.getElementById('sheet-webapp-url-input');
+            const sheetTestResult = document.getElementById('sheet-test-result');
+            if (modalSheetConfig) {
+              sheetWebappUrlInput.value = googleSheetWebappUrl;
+              sheetTestResult.textContent = '';
+              modalSheetConfig.classList.add('active');
+            }
+          });
+        }
+
+        loadStudentNames();
+        loadScoreLog();
         attachEventListeners();
+        updateSheetStatusDisplay();
       }
 
       function attachEventListeners() {
@@ -2112,6 +2694,62 @@
           modalResult.classList.remove('active');
           switchToScreen('TITLE');
         });
+
+        // Google Sheets Config Modal Event Listeners
+        const modalSheetConfig = document.getElementById('modal-sheet-config');
+        const sheetWebappUrlInput = document.getElementById('sheet-webapp-url-input');
+        const btnSaveSheetUrl = document.getElementById('btn-save-sheet-url');
+        const btnCloseSheetModal = document.getElementById('btn-close-sheet-modal');
+        const btnOpenSheetSettings = document.getElementById('btn-open-sheet-settings');
+        const btnOpenSheetFromModal = document.getElementById('btn-open-sheet-from-modal');
+        const sheetTestResult = document.getElementById('sheet-test-result');
+
+        function openSheetModal() {
+          sounds.playPop();
+          sheetWebappUrlInput.value = googleSheetWebappUrl;
+          sheetTestResult.textContent = '';
+          modalSheetConfig.classList.add('active');
+        }
+
+        if (btnOpenSheetSettings) btnOpenSheetSettings.addEventListener('click', openSheetModal);
+        if (btnOpenSheetFromModal) btnOpenSheetFromModal.addEventListener('click', openSheetModal);
+
+        if (btnCloseSheetModal) {
+          btnCloseSheetModal.addEventListener('click', () => {
+            sounds.playPop();
+            modalSheetConfig.classList.remove('active');
+          });
+        }
+
+        if (btnSaveSheetUrl) {
+          btnSaveSheetUrl.addEventListener('click', () => {
+            sounds.playPop();
+            const val = sheetWebappUrlInput.value.trim();
+            if (val && !val.startsWith('http')) {
+              sheetTestResult.textContent = '❌ 유효한 URL(https://...)을 입력해주세요!';
+              sheetTestResult.style.color = '#D32F2F';
+              return;
+            }
+            googleSheetWebappUrl = val;
+            localStorage.setItem(GOOGLE_SHEET_KEY, val);
+            updateSheetStatusDisplay();
+
+            if (val) {
+              sheetTestResult.textContent = '✅ 연동 URL이 성공적으로 저장되었습니다!';
+              sheetTestResult.style.color = '#2E7D32';
+              sounds.playSuccess();
+              setTimeout(() => {
+                modalSheetConfig.classList.remove('active');
+              }, 800);
+            } else {
+              sheetTestResult.textContent = '연동이 해제되었습니다 (로컬 저장 모드)';
+              sheetTestResult.style.color = '#8D6E63';
+              setTimeout(() => {
+                modalSheetConfig.classList.remove('active');
+              }, 800);
+            }
+          });
+        }
       }
 
       function switchToScreen(scr) {
@@ -2304,6 +2942,14 @@
           resultSubtitle.textContent = '1분 동안 정말 훌륭하게 초밥을 쥐었습니다!';
           saveScoreSection.style.display = 'flex';
           saveScoreSection.classList.remove('submitted');
+
+          // Pre-fill student name from dashboard dropdown if available
+          if (window.getCurrentActiveStudent) {
+            const activeStudent = window.getCurrentActiveStudent();
+            if (activeStudent) {
+              playerNicknameInput.value = activeStudent;
+            }
+          }
         } else {
           resultIcon.textContent = '👑';
           resultTitle.textContent = '명예의 전당';
@@ -2316,6 +2962,7 @@
         summaryCombo.textContent = `${state.maxCombo}회`;
 
         renderRankingTable(getLeaderboard());
+        updateSheetStatusDisplay();
         modalResult.classList.add('active');
       }
 
@@ -2349,6 +2996,65 @@
         renderRankingTable(updatedList, foundIdx);
         saveScoreSection.classList.add('submitted');
         sounds.playSuccess();
+
+        // 1. Auto-record score into the Right Dashboard Area (수정 불가 입력창)
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+        const syncTag = googleSheetWebappUrl ? '[구글시트 자동전송 🟢]' : '[로컬저장]';
+        const logLine = `[${timeStr}] 학생: ${nick} | 점수: ${state.score}점 (성공: ${state.successCount}회 / 실패: ${state.failCount}회 / 최대콤보: ${state.maxCombo}회) ${syncTag}`;
+        if (window.appendScoreLogEntry) {
+          window.appendScoreLogEntry(logLine);
+        }
+
+        // 2. Automatically advance to next student in the list for the next turn
+        if (window.advanceToNextStudent) {
+          window.advanceToNextStudent();
+        }
+
+        // 3. If Google Sheet Web App URL is set, send data automatically!
+        if (googleSheetWebappUrl) {
+          sendScoreToGoogleSheet(nick, state.score, state.successCount, state.failCount, state.maxCombo);
+        }
+      }
+
+      function sendScoreToGoogleSheet(nickname, score, success, fail, maxCombo) {
+        const statusEl = document.getElementById('sheet-sync-status');
+        if (statusEl) {
+          statusEl.textContent = '📊 구글 스프레드시트로 전송 중...';
+          statusEl.style.color = '#E65100';
+        }
+
+        const payload = {
+          timestamp: new Date().toLocaleString('ko-KR'),
+          name: nickname,
+          score: score,
+          successCount: success,
+          failCount: fail,
+          maxCombo: maxCombo
+        };
+
+        // Google Apps Script Web App POST via fetch
+        // Uses text/plain or standard POST with no-cors to avoid CORS preflight blocking in browsers
+        fetch(googleSheetWebappUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          cache: 'no-cache',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(payload)
+        }).then(() => {
+          if (statusEl) {
+            statusEl.textContent = '✅ 구글 시트 자동 저장 완료! 🟢';
+            statusEl.style.color = '#2E7D32';
+          }
+        }).catch(err => {
+          console.error('Google Sheet save error:', err);
+          if (statusEl) {
+            statusEl.textContent = '⚠️ 구글 시트 전송 지연 (로컬 저장은 완료)';
+            statusEl.style.color = '#D32F2F';
+          }
+        });
       }
 
       function escapeHtml(str) {
